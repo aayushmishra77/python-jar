@@ -1,0 +1,41 @@
+.listening #micButton {
+    animation: pulse 2s infinite;
+    color: #3B82F6;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+#responseArea {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.command-template {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.command-template:hover {
+    background-color: #f3f4f6;
+}
+
+#status.recording {
+    color: #EF4444;
+}
+
+#status.processing {
+    color: #3B82F6;
+} 

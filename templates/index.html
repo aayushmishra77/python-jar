@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis Voice Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Jarvis Voice Assistant</h1>
+                <p class="text-gray-600">Your personal AI assistant</p>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative mb-6">
+                <input type="text" id="commandInput" 
+                    class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Type your command or click the microphone to speak...">
+                <button id="micButton" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500">
+                    <i class="fas fa-microphone text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Command Templates -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-semibold mb-2 text-gray-700">Information Commands</h3>
+                    <ul class="text-sm text-gray-600">
+                        <li>"Wikipedia [topic]"</li>
+                        <li>"What's the time?"</li>
+                        <li>"What's my IP address?"</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="font-semibold mb-2 text-gray-700">Web Commands</h3>
+                    <ul class="text-sm text-gray-600">
+                        <li>"Search on YouTube [query]"</li>
+                        <li>"Open YouTube"</li>
+                        <li>"Search Google [query]"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Response Area -->
+            <div class="bg-white rounded-lg shadow p-4 min-h-[200px] mb-4">
+                <h3 class="font-semibold mb-2 text-gray-700">Assistant Response</h3>
+                <div id="responseArea" class="text-gray-600 whitespace-pre-wrap"></div>
+            </div>
+
+            <!-- Status Indicator -->
+            <div id="status" class="text-center text-sm text-gray-500"></div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 
