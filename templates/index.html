@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jarvis AI Assistant</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gray-900 min-h-screen text-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Header with Animated Logo -->
+            <div class="text-center mb-12 relative">
+                <div class="jarvis-logo mb-6">
+                    <div class="pulse-ring"></div>
+                    <i class="fas fa-microchip text-4xl text-blue-500"></i>
+                </div>
+                <h1 class="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 text-transparent bg-clip-text mb-3">Jarvis AI</h1>
+                <p class="text-gray-400 text-lg">Your Intelligent Personal Assistant</p>
+            </div>
+
+            <!-- Main Command Interface -->
+            <div class="command-interface p-6 mb-8">
+                <!-- Input Area -->
+                <div class="input-area">
+                    <input type="text" id="commandInput" 
+                        placeholder="Type a command or click the microphone...">
+                    <button id="micButton">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+
+                <!-- Response Area -->
+                <div class="response-area">
+                    <div class="response-header">
+                        <i class="fas fa-comment-dots mr-2"></i>
+                        Assistant Response
+                    </div>
+                    <div id="responseArea" class="custom-scrollbar"></div>
+                </div>
+
+                <!-- Status Indicator -->
+                <div id="status"></div>
+            </div>
+
+            <!-- Command Templates -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Information Commands -->
+                <div class="command-card">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                        Information Commands
+                    </div>
+                    <ul class="command-list">
+                        <li><span class="command-keyword">Wikipedia</span> [topic]</li>
+                        <li><span class="command-keyword">Time</span> - Get current time</li>
+                        <li><span class="command-keyword">IP Address</span> - Show IP</li>
+                        <li><span class="command-keyword">Help</span> - Show all commands</li>
+                    </ul>
+                </div>
+
+                <!-- Web Commands -->
+                <div class="command-card">
+                    <div class="card-header">
+                        <i class="fas fa-globe text-purple-400 mr-2"></i>
+                        Web Commands
+                    </div>
+                    <ul class="command-list">
+                        <li><span class="command-keyword">Search YouTube</span> [query]</li>
+                        <li><span class="command-keyword">Open YouTube</span></li>
+                        <li><span class="command-keyword">Search Google</span> [query]</li>
+                    </ul>
+                </div>
+
+                <!-- System Commands -->
+                <div class="command-card">
+                    <div class="card-header">
+                        <i class="fas fa-cog text-green-400 mr-2"></i>
+                        System Commands
+                    </div>
+                    <ul class="command-list">
+                        <li><span class="command-keyword">Shutdown</span> - Shutdown system</li>
+                        <li><span class="command-keyword">Restart</span> - Restart system</li>
+                        <li><span class="command-keyword">Lock</span> - Lock system</li>
+                    </ul>
+                </div>
+
+                <!-- Exit Commands -->
+                <div class="command-card">
+                    <div class="card-header">
+                        <i class="fas fa-sign-out-alt text-red-400 mr-2"></i>
+                        Exit Commands
+                    </div>
+                    <ul class="command-list">
+                        <li><span class="command-keyword">Goodbye</span> - Exit assistant</li>
+                        <li><span class="command-keyword">Exit</span> - Close Jarvis</li>
+                        <li><span class="command-keyword">Sleep</span> - Put Jarvis to sleep</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html> 
