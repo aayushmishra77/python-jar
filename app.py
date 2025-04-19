@@ -28,7 +28,7 @@ def process_command():
                 ip = assistant.get_ip_address(command)
                 response = f"Your IP address is {ip}"
             except Exception as e:
-                print(f"Error getting IP: {e}")
+                print(f"Error getting IP: {e}", flush=True)
                 response = "Sorry, I couldn't retrieve your IP address"
         
         elif 'time' in command:
@@ -42,7 +42,7 @@ def process_command():
                     wiki_response = wikipedia.summary(query, sentences=2)
                     response = f"According to Wikipedia: {wiki_response}"
                 except Exception as e:
-                    print(f"Wikipedia error: {e}")
+                    print(f"Wikipedia error: {e}", flush=True)
                     response = f"Sorry, I couldn't find information about {query}"
             else:
                 response = "Please specify what you'd like to search on Wikipedia"
@@ -72,7 +72,7 @@ def process_command():
                         should_exit = handler(command)
                         response = "Command processed successfully"
                     except Exception as e:
-                        print(f"Command handler error: {e}")
+                        print(f"Command handler error: {e}", flush=True)
                         response = f"Sorry, there was an error processing your command: {str(e)}"
                     break
             else:
@@ -86,7 +86,7 @@ def process_command():
             try:
                 assistant.speak(response)
             except Exception as e:
-                print(f"Speech synthesis error: {e}")
+                print(f"Speech synthesis error: {e}", flush=True)
                 # Continue even if speech fails - the response will still be displayed
 
         return jsonify({
@@ -97,7 +97,7 @@ def process_command():
 
     except Exception as e:
         error_msg = f"Error processing command: {str(e)}"
-        print(error_msg)
+        print(error_msg, flush=True)
         return jsonify({
             'success': False,
             'error': error_msg

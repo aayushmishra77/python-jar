@@ -11,6 +11,7 @@ import os
 import random
 import sys
 from typing import Optional, Dict, Callable
+import time
 
 # Third-party imports
 import pyttsx3
@@ -105,19 +106,27 @@ class VoiceAssistant:
         Args:
             text: The text to be converted to speech
         """
-        print(f"Assistant: {text}")
+        # Print the text first and ensure it's displayed immediately
+        print(f"Assistant: {text}", flush=True)
+        
+        # Small delay to ensure text is visible before speech starts
+        time.sleep(0.1)
         
         try:
             # Initialize a new engine instance for each speech request
             engine = None
             try:
                 engine = pyttsx3.init()
+                # Lower the rate for better clarity
+                engine.setProperty('rate', 150)
+                # Set up the voice
                 voices = engine.getProperty('voices')
                 engine.setProperty('voice', voices[0].id)
-                engine.setProperty('rate', 150)
+                # Queue and run the speech
                 engine.say(text)
                 engine.runAndWait()
             finally:
+                # Clean up the engine
                 if engine:
                     try:
                         engine.stop()
@@ -127,7 +136,7 @@ class VoiceAssistant:
                         del engine
                         
         except Exception as e:
-            print(f"Error in speech synthesis: {e}")
+            print(f"Error in speech synthesis: {e}", flush=True)
 
     def listen(self) -> Optional[str]:
         """
@@ -180,14 +189,54 @@ class VoiceAssistant:
         """
         try:
             self.speak('Searching Wikipedia...')
-            query = query.replace("wikipedia", "").strip()
-            results = wikipedia.summary(query, sentences=2)
-            self.speak("According to Wikipedia")
-            print(results)
-            self.speak(results)
+            # Clean up the query by removing 'wikipedia' and extra spaces
+            search_term = query.replace("wikipedia", "").strip()
+            
+            if not search_term:
+                self.speak("What would you like to search for on Wikipedia?")
+                return
+
+            try:
+                # First try direct search
+                page = wikipedia.page(search_term, auto_suggest=False)
+                summary = page.summary
+            except wikipedia.DisambiguationError as e:
+                # If we get a disambiguation page, take the first option
+                try:
+                    page = wikipedia.page(e.options[0], auto_suggest=False)
+                    summary = page.summary
+                    self.speak(f"Found multiple results. Showing information about {e.options[0]}")
+                except:
+                    raise
+            except wikipedia.PageError:
+                # If direct search fails, try with auto_suggest=True
+                try:
+                    # Search Wikipedia for possible matches
+                    search_results = wikipedia.search(search_term, results=1)
+                    if search_results:
+                        page = wikipedia.page(search_results[0], auto_suggest=True)
+                        summary = page.summary
+                        self.speak(f"Showing results for {search_results[0]}")
+                    else:
+                        raise wikipedia.PageError(search_term)
+                except:
+                    raise
+
+            # Get first two sentences of the summary
+            sentences = summary.split('. ')
+            short_summary = '. '.join(sentences[:2]) + '.'
+            
+            self.speak("According to Wikipedia:")
+            print(short_summary, flush=True)
+            self.speak(short_summary)
+            
         except Exception as e:
-            self.speak("Sorry, I couldn't find that information on Wikipedia")
-            print(f"Wikipedia error: {e}")
+            error_msg = str(e)
+            print(f"Wikipedia error: {error_msg}", flush=True)
+            if "Page id" in error_msg:
+                self.speak("I couldn't find an exact match. Try rephrasing your search or being more specific.")
+            else:
+                self.speak("Sorry, I couldn't find that information on Wikipedia.")
 
     def handle_youtube_search(self, query: str) -> None:
         """
