@@ -1,18 +1,28 @@
 """
 Jarvis - A Voice-Controlled Personal Assistant
+
+This module implements a voice-controlled personal assistant that can perform
+various tasks like web searches, system operations, and information retrieval.
 """
+
+# Standard library imports
 import datetime
 import os
+import random
 import sys
 from typing import Optional, Dict, Callable
 
+# Third-party imports
 import pyttsx3
 import requests
 import speech_recognition as sr
 import webbrowser
 import wikipedia
 
+
 class VoiceAssistant:
+    """A voice-controlled personal assistant with various capabilities."""
+
     def __init__(self):
         """Initialize the voice assistant with required settings."""
         try:
@@ -20,34 +30,45 @@ class VoiceAssistant:
             self.voices = self.engine.getProperty('voices')
             self.engine.setProperty('voice', self.voices[0].id)
             self.engine.setProperty('rate', 150)
+            
             self.recognizer = sr.Recognizer()
             self.recognizer.dynamic_energy_threshold = True
             self.recognizer.pause_threshold = 0.8
+            
             self.setup_commands()
         except Exception as e:
             print(f"Error initializing voice assistant: {e}")
             sys.exit(1)
-        
+
     def setup_commands(self) -> None:
-        """Set up command handlers for better organization."""
+        """Set up command handlers for voice commands."""
         self.commands: Dict[str, Callable] = {
+            # Information queries
             'wikipedia': self.handle_wikipedia_query,
+            'time': self.tell_time,
+            'ip address': self.get_ip_address,
+            'help': self.show_help,
+            
+            # Web actions
             'search on youtube': self.handle_youtube_search,
             'open youtube': self.handle_youtube_open,
             'search google': self.handle_google_search,
-            'ip address': self.get_ip_address,
-            'time': self.tell_time,
+            
+            # System commands
             'shut down': self.handle_system_commands,
             'restart': self.handle_system_commands,
             'lock': self.handle_system_commands,
             'sleep': self.handle_system_commands,
-            'help': self.show_help,
+            
+            # Appreciation responses
             'thank': self.handle_appreciation,
             'nice': self.handle_appreciation,
             'good': self.handle_appreciation,
             'great': self.handle_appreciation,
             'awesome': self.handle_appreciation,
             'excellent': self.handle_appreciation,
+            
+            # Exit commands
             'bye': self.handle_goodbye,
             'goodbye': self.handle_goodbye,
             'see you': self.handle_goodbye,
@@ -64,53 +85,70 @@ class VoiceAssistant:
             'cya': self.handle_goodbye,
             'adios': self.handle_goodbye
         }
-        
+
     def speak(self, text: str) -> None:
-        """Convert text to speech."""
+        """
+        Convert text to speech.
+        
+        Args:
+            text: The text to be converted to speech
+        """
         try:
-            print(f"Assistant: {text}")  # Print what the assistant is saying
+            print(f"Assistant: {text}")
             self.engine.say(text)
             self.engine.runAndWait()
         except Exception as e:
             print(f"Error in speech synthesis: {e}")
 
     def listen(self) -> Optional[str]:
-        """Listen for voice input and convert to text."""
+        """
+        Listen for voice input and convert to text.
+        
+        Returns:
+            The recognized text or None if recognition failed
+        """
         try:
             with sr.Microphone() as source:
                 print("\nListening...")
                 self.recognizer.adjust_for_ambient_noise(source, duration=0.5)
                 audio = self.recognizer.listen(source, timeout=5, phrase_time_limit=5)
+                
                 print("Recognizing...")
                 query = self.recognizer.recognize_google(audio, language='en-in')
                 print(f"User said: {query}")
                 return query.lower()
+                
         except sr.WaitTimeoutError:
             print("No speech detected within timeout")
-            return None
         except sr.UnknownValueError:
             print("Could not understand audio")
-            return None
         except sr.RequestError as e:
             print(f"Could not request results; {e}")
-            return None
         except Exception as e:
             print(f"Error in speech recognition: {e}")
-            return None
+        
+        return None
 
     def greet(self) -> None:
         """Greet the user based on time of day."""
         hour = datetime.datetime.now().hour
+        
         if 0 <= hour < 12:
             self.speak("Good Morning!")
         elif 12 <= hour < 18:
             self.speak("Good Afternoon!")
         else:
             self.speak("Good Evening!")
+            
         self.speak("I am Jarvis, your voice assistant. Say 'help' to learn what I can do.")
 
     def handle_wikipedia_query(self, query: str) -> None:
-        """Handle Wikipedia search queries."""
+        """
+        Handle Wikipedia search queries.
+        
+        Args:
+            query: The search query string
+        """
         try:
             self.speak('Searching Wikipedia...')
             query = query.replace("wikipedia", "").strip()
@@ -123,7 +161,12 @@ class VoiceAssistant:
             print(f"Wikipedia error: {e}")
 
     def handle_youtube_search(self, query: str) -> None:
-        """Handle YouTube search commands."""
+        """
+        Handle YouTube search commands.
+        
+        Args:
+            query: The search query string
+        """
         search_term = query.replace("search on youtube", "").strip()
         if not search_term:
             self.speak("What would you like to search for on YouTube?")
@@ -131,7 +174,7 @@ class VoiceAssistant:
             if not search_term:
                 self.speak("Sorry, I couldn't understand what to search for")
                 return
-                
+
         webbrowser.open(f"https://www.youtube.com/results?search_query={search_term}")
         self.speak(f"Searching YouTube for {search_term}")
 
@@ -141,7 +184,12 @@ class VoiceAssistant:
         self.speak("Opening YouTube")
 
     def handle_google_search(self, query: str) -> None:
-        """Handle Google search commands."""
+        """
+        Handle Google search commands.
+        
+        Args:
+            query: The search query string
+        """
         search_term = query.replace("search google", "").strip()
         if not search_term:
             self.speak("What would you like to search for on Google?")
@@ -149,12 +197,20 @@ class VoiceAssistant:
             if not search_term:
                 self.speak("Sorry, I couldn't understand what to search for")
                 return
-                
+
         webbrowser.open(f"https://www.google.com/search?q={search_term}")
         self.speak(f"Searching Google for {search_term}")
 
     def handle_system_commands(self, query: str) -> bool:
-        """Handle system-related commands. Returns True if should exit."""
+        """
+        Handle system-related commands.
+        
+        Args:
+            query: The command string
+            
+        Returns:
+            bool: True if the program should exit, False otherwise
+        """
         if "shut down" in query:
             self.speak("Are you sure you want to shut down the system? Say 'yes' to confirm or 'no' to cancel.")
             confirmation = self.listen()
@@ -224,7 +280,12 @@ I can help you with the following commands:
         self.speak(help_text.replace("-", "").replace("\n", " ").strip())
 
     def handle_appreciation(self, query: str) -> None:
-        """Handle user appreciation with friendly responses."""
+        """
+        Handle user appreciation with friendly responses.
+        
+        Args:
+            query: The appreciation message
+        """
         responses = [
             "Thank you! I'm happy to help!",
             "You're welcome! It's my pleasure to assist you.",
@@ -232,11 +293,18 @@ I can help you with the following commands:
             "That's very kind of you to say!",
             "Thank you for the appreciation! Is there anything else I can help you with?"
         ]
-        import random
         self.speak(random.choice(responses))
 
     def handle_goodbye(self, query: str) -> bool:
-        """Handle goodbye messages with friendly farewell responses."""
+        """
+        Handle goodbye messages with friendly farewell responses.
+        
+        Args:
+            query: The goodbye message
+            
+        Returns:
+            bool: True to signal program exit
+        """
         farewell_messages = [
             "Goodbye! Have a wonderful day!",
             "Take care! Looking forward to helping you again!",
@@ -252,9 +320,8 @@ I can help you with the following commands:
             "Goodbye! Remember, I'm always here to help!",
             "See you next time! It's been a pleasure!"
         ]
-        import random
         self.speak(random.choice(farewell_messages))
-        return True  # Return True to signal the program to exit
+        return True
 
     def run(self) -> None:
         """Main loop for the voice assistant."""
@@ -274,7 +341,9 @@ I can help you with the following commands:
             else:
                 self.speak("I'm not sure how to help with that. Say 'help' to see what I can do.")
 
-if __name__ == "__main__":
+
+def main():
+    """Main entry point of the program."""
     try:
         assistant = VoiceAssistant()
         assistant.run()
@@ -284,3 +353,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"An error occurred: {e}")
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
