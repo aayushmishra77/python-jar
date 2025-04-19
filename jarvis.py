@@ -135,17 +135,37 @@ class VoiceAssistant:
     def handle_system_commands(self, query: str) -> bool:
         """Handle system-related commands. Returns True if should exit."""
         if "shut down" in query:
-            self.speak("Shutting down the system in 5 seconds")
-            os.system("shutdown /s /t 5")
+            self.speak("Are you sure you want to shut down the system? Say 'yes' to confirm or 'no' to cancel.")
+            confirmation = self.listen()
+            if confirmation and 'yes' in confirmation.lower():
+                self.speak("Shutting down the system in 5 seconds")
+                os.system("shutdown /s /t 5")
+            else:
+                self.speak("Shutdown cancelled")
         elif "restart" in query:
-            self.speak("Restarting the system in 5 seconds")
-            os.system("shutdown /r /t 5")
+            self.speak("Are you sure you want to restart the system? Say 'yes' to confirm or 'no' to cancel.")
+            confirmation = self.listen()
+            if confirmation and 'yes' in confirmation.lower():
+                self.speak("Restarting the system in 5 seconds")
+                os.system("shutdown /r /t 5")
+            else:
+                self.speak("Restart cancelled")
         elif "lock" in query:
-            self.speak("Locking the system")
-            os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+            self.speak("Are you sure you want to lock the system? Say 'yes' to confirm or 'no' to cancel.")
+            confirmation = self.listen()
+            if confirmation and 'yes' in confirmation.lower():
+                self.speak("Locking the system")
+                os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+            else:
+                self.speak("Lock cancelled")
         elif "sleep" in query:
-            self.speak('Goodbye! Have a great day!')
-            return True
+            self.speak("Are you sure you want to exit? Say 'yes' to confirm or 'no' to cancel.")
+            confirmation = self.listen()
+            if confirmation and 'yes' in confirmation.lower():
+                self.speak('Goodbye! Have a great day!')
+                return True
+            else:
+                self.speak("Exit cancelled")
         return False
 
     def get_ip_address(self, query: str) -> None:
