@@ -26,19 +26,31 @@ class VoiceAssistant:
     def __init__(self):
         """Initialize the voice assistant with required settings."""
         try:
-            self.engine = pyttsx3.init('sapi5')
-            self.voices = self.engine.getProperty('voices')
-            self.engine.setProperty('voice', self.voices[0].id)
-            self.engine.setProperty('rate', 150)
-            
+            # Initialize speech recognition
             self.recognizer = sr.Recognizer()
             self.recognizer.dynamic_energy_threshold = True
             self.recognizer.pause_threshold = 0.8
             
+            # Set up commands
             self.setup_commands()
+            
+            # Don't initialize speech engine here
+            self.engine = None
+            self.voices = None
         except Exception as e:
             print(f"Error initializing voice assistant: {e}")
             sys.exit(1)
+
+    def setup_speech_engine(self):
+        """Initialize the speech engine with required settings."""
+        try:
+            self.engine = pyttsx3.init('sapi5')
+            self.voices = self.engine.getProperty('voices')
+            self.engine.setProperty('voice', self.voices[0].id)
+            self.engine.setProperty('rate', 150)
+        except Exception as e:
+            print(f"Error setting up speech engine: {e}")
+            raise
 
     def setup_commands(self) -> None:
         """Set up command handlers for voice commands."""
@@ -93,10 +105,27 @@ class VoiceAssistant:
         Args:
             text: The text to be converted to speech
         """
+        print(f"Assistant: {text}")
+        
         try:
-            print(f"Assistant: {text}")
-            self.engine.say(text)
-            self.engine.runAndWait()
+            # Initialize a new engine instance for each speech request
+            engine = None
+            try:
+                engine = pyttsx3.init()
+                voices = engine.getProperty('voices')
+                engine.setProperty('voice', voices[0].id)
+                engine.setProperty('rate', 150)
+                engine.say(text)
+                engine.runAndWait()
+            finally:
+                if engine:
+                    try:
+                        engine.stop()
+                    except:
+                        pass
+                    finally:
+                        del engine
+                        
         except Exception as e:
             print(f"Error in speech synthesis: {e}")
 
@@ -245,15 +274,22 @@ class VoiceAssistant:
                 self.speak("Exit cancelled")
         return False
 
-    def get_ip_address(self, query: str) -> None:
-        """Get and speak the public IP address."""
+    def get_ip_address(self, command: str) -> str:
+        """
+        Get the public IP address.
+        
+        Args:
+            command: The command string
+            
+        Returns:
+            str: The public IP address
+        """
         try:
-            ip_address = requests.get('https://api.ipify.org').text
-            print(f"IP Address: {ip_address}")
-            self.speak(f"Your IP address is {ip_address}")
+            ip = requests.get('https://api.ipify.org').text
+            return ip
         except Exception as e:
-            self.speak("Sorry, I couldn't retrieve your IP address")
             print(f"Error getting IP address: {e}")
+            return "Could not retrieve IP address"
 
     def tell_time(self, query: str) -> None:
         """Tell the current time."""
