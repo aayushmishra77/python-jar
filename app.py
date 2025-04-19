@@ -36,16 +36,18 @@ def process_command():
             response = f"The current time is {current_time}"
         
         elif 'wikipedia' in command:
-            query = command.replace("wikipedia", "").strip()
-            if query:
-                try:
-                    wiki_response = wikipedia.summary(query, sentences=2)
-                    response = f"According to Wikipedia: {wiki_response}"
-                except Exception as e:
-                    print(f"Wikipedia error: {e}", flush=True)
-                    response = f"Sorry, I couldn't find information about {query}"
-            else:
-                response = "Please specify what you'd like to search on Wikipedia"
+            # Use the assistant's improved Wikipedia search method
+            try:
+                assistant.handle_wikipedia_query(command)
+                # The assistant's method handles the speaking, so we don't need a response here
+                return jsonify({
+                    'success': True,
+                    'response': 'Wikipedia search completed',
+                    'should_exit': False
+                })
+            except Exception as e:
+                print(f"Wikipedia error: {e}", flush=True)
+                response = "Sorry, I couldn't find that information on Wikipedia"
         
         elif 'help' in command:
             response = """I can help you with the following commands:
@@ -102,6 +104,6 @@ def process_command():
             'success': False,
             'error': error_msg
         })
-
+1
 if __name__ == '__main__':
     app.run(debug=True) 
