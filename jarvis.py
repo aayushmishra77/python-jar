@@ -41,7 +41,28 @@ class VoiceAssistant:
             'restart': self.handle_system_commands,
             'lock': self.handle_system_commands,
             'sleep': self.handle_system_commands,
-            'help': self.show_help
+            'help': self.show_help,
+            'thank': self.handle_appreciation,
+            'nice': self.handle_appreciation,
+            'good': self.handle_appreciation,
+            'great': self.handle_appreciation,
+            'awesome': self.handle_appreciation,
+            'excellent': self.handle_appreciation,
+            'bye': self.handle_goodbye,
+            'goodbye': self.handle_goodbye,
+            'see you': self.handle_goodbye,
+            'see ya': self.handle_goodbye,
+            'catch you later': self.handle_goodbye,
+            'take care': self.handle_goodbye,
+            'have a good day': self.handle_goodbye,
+            'good night': self.handle_goodbye,
+            'talk to you later': self.handle_goodbye,
+            'i am leaving': self.handle_goodbye,
+            'got to go': self.handle_goodbye,
+            'gotta go': self.handle_goodbye,
+            'farewell': self.handle_goodbye,
+            'cya': self.handle_goodbye,
+            'adios': self.handle_goodbye
         }
         
     def speak(self, text: str) -> None:
@@ -201,6 +222,39 @@ I can help you with the following commands:
         print(help_text)
         self.speak("Here are the commands I understand:")
         self.speak(help_text.replace("-", "").replace("\n", " ").strip())
+
+    def handle_appreciation(self, query: str) -> None:
+        """Handle user appreciation with friendly responses."""
+        responses = [
+            "Thank you! I'm happy to help!",
+            "You're welcome! It's my pleasure to assist you.",
+            "I appreciate your kind words!",
+            "That's very kind of you to say!",
+            "Thank you for the appreciation! Is there anything else I can help you with?"
+        ]
+        import random
+        self.speak(random.choice(responses))
+
+    def handle_goodbye(self, query: str) -> bool:
+        """Handle goodbye messages with friendly farewell responses."""
+        farewell_messages = [
+            "Goodbye! Have a wonderful day!",
+            "Take care! Looking forward to helping you again!",
+            "Farewell! It was a pleasure assisting you!",
+            "Bye bye! Stay amazing!",
+            "Until next time! Have a great day ahead!",
+            "It was great chatting with you! See you soon!",
+            "Goodbye! Don't forget to call me if you need any help!",
+            "Take care and stay safe! Goodbye!",
+            "Have a fantastic rest of your day! Goodbye!",
+            "Wishing you a great time ahead! See you later!",
+            "Thanks for chatting! Have a wonderful time!",
+            "Goodbye! Remember, I'm always here to help!",
+            "See you next time! It's been a pleasure!"
+        ]
+        import random
+        self.speak(random.choice(farewell_messages))
+        return True  # Return True to signal the program to exit
 
     def run(self) -> None:
         """Main loop for the voice assistant."""
